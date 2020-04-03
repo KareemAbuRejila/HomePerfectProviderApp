@@ -12,12 +12,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import cc.cloudist.acplibrary.ACProgressConstant
 import cc.cloudist.acplibrary.ACProgressFlower
-import com.codeshot.home_perfect_provider.Common.Common
-import com.codeshot.home_perfect_provider.Common.Common.CURRENT_TOKEN
-import com.codeshot.home_perfect_provider.Common.Common.CURRENT_USER_KEY
-import com.codeshot.home_perfect_provider.Common.Common.CURRENT_USER_PHONE
-import com.codeshot.home_perfect_provider.Common.Common.PROVIDERS_REF
-import com.codeshot.home_perfect_provider.Common.Common.TOKENS_REF
+import com.codeshot.home_perfect_provider.common.Common
+import com.codeshot.home_perfect_provider.common.Common.CURRENT_TOKEN
+import com.codeshot.home_perfect_provider.common.Common.CURRENT_USER_KEY
+import com.codeshot.home_perfect_provider.common.Common.CURRENT_USER_PHONE
+import com.codeshot.home_perfect_provider.common.Common.PROVIDERS_REF
+import com.codeshot.home_perfect_provider.common.Common.TOKENS_REF
 import com.codeshot.home_perfect_provider.R
 import com.codeshot.home_perfect_provider.databinding.ActivityHomeBinding
 import com.codeshot.home_perfect_provider.models.Provider
@@ -38,7 +38,7 @@ import io.ghyeok.stickyswitch.widget.StickySwitch.OnSelectedChangeListener
 class HomeActivity : AppCompatActivity() {
     private val TAG = "HomeActivity"
     private lateinit var activityHomeBinding: ActivityHomeBinding
-    private lateinit var homeViewModel: HomeViewModel
+//    private lateinit var homeViewModel: HomeViewModel
     private var dialogUpdateUserInfo=DialogUpdateUserInfo()
     private var sharedPreferences: SharedPreferences? = null
 
@@ -133,8 +133,8 @@ class HomeActivity : AppCompatActivity() {
         {
             TOKENS_REF.document(CURRENT_USER_KEY)
                 .set(token)
-                .addOnSuccessListener { Log.i("Saved Token", "Yesssssssssssssssssssssss") }
-                .addOnFailureListener { e -> Log.i("ERROR TOKEN", e.message) }
+                .addOnSuccessListener { Log.i("Saved Token", "Token Uploaded") }
+                .addOnFailureListener { e -> Log.i("ERROR TOKEN", e.message!!) }
 
         }
     }
@@ -169,7 +169,7 @@ class HomeActivity : AppCompatActivity() {
                 }
                 acProgressBaseDialog.hide()
             }.addOnFailureListener { e ->
-                Log.e("Error USRDATA", e.message)
+                Log.e("Error USR_DATA", e.message!!)
             }
     }
 
@@ -194,7 +194,7 @@ class HomeActivity : AppCompatActivity() {
                     activityHomeBinding.provider = provider
                 }
                 acProgressBaseDialog.hide()
-            }.addOnFailureListener { e ->
+            }.addOnFailureListener {
                 if (jsonProvider != "null") {
                     val provider = Gson().fromJson(jsonProvider, Provider::class.java)
                     provider.online = false
@@ -207,7 +207,7 @@ class HomeActivity : AppCompatActivity() {
             }
 
     }
-    fun getProviderData(){
+//    fun getProviderData(){
 //        homeViewModel.provider.observe(this, Observer {
 //            if (it==null){
 //                supportFragmentManager.executePendingTransactions()
@@ -215,7 +215,7 @@ class HomeActivity : AppCompatActivity() {
 //            }else
 //                activityHomeBinding.provider=it
 //        })
-    }
+//    }
 
      fun signOut(){
         FirebaseAuth.getInstance().signOut()

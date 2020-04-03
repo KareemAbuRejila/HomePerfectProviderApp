@@ -3,11 +3,9 @@ package com.codeshot.home_perfect_provider.ui.myRequests
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.codeshot.home_perfect_provider.Common.Common
-import com.codeshot.home_perfect_provider.Common.Common.CURRENT_USER_KEY
-import com.codeshot.home_perfect_provider.Common.Common.PROVIDERS_REF
-import com.codeshot.home_perfect_provider.Common.Common.REQUESTS_REF
-import com.codeshot.home_perfect_provider.Common.Common.USERS_REF
+import com.codeshot.home_perfect_provider.common.Common.CURRENT_USER_KEY
+import com.codeshot.home_perfect_provider.common.Common.PROVIDERS_REF
+import com.codeshot.home_perfect_provider.common.Common.REQUESTS_REF
 import com.codeshot.home_perfect_provider.models.Provider
 import com.codeshot.home_perfect_provider.models.Request
 import com.google.firebase.firestore.Query

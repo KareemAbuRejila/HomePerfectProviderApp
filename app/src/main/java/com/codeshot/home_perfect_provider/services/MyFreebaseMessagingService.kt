@@ -10,8 +10,8 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import com.codeshot.home_perfect_provider.Common.Common.CURRENT_USER_KEY
-import com.codeshot.home_perfect_provider.Common.Common.TOKENS_REF
+import com.codeshot.home_perfect_provider.common.Common.CURRENT_USER_KEY
+import com.codeshot.home_perfect_provider.common.Common.TOKENS_REF
 import com.codeshot.home_perfect_provider.Helpers.NotificationsHelper
 import com.codeshot.home_perfect_provider.R
 import com.codeshot.home_perfect_provider.models.Token

@@ -7,8 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.codeshot.home_perfect_provider.Common.Common
-import com.codeshot.home_perfect_provider.Common.Common.USERS_REF
+import com.codeshot.home_perfect_provider.common.Common
+import com.codeshot.home_perfect_provider.common.Common.USERS_REF
 import com.codeshot.home_perfect_provider.R
 import com.codeshot.home_perfect_provider.databinding.DialogRequestBinding
 import com.codeshot.home_perfect_provider.models.User

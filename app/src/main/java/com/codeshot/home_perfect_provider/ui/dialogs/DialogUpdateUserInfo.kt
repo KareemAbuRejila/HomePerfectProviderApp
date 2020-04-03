@@ -26,10 +26,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import cc.cloudist.acplibrary.ACProgressConstant
 import cc.cloudist.acplibrary.ACProgressFlower
-import com.codeshot.home_perfect_provider.Common.Common
-import com.codeshot.home_perfect_provider.Common.Common.CURRENT_USER_KEY
-import com.codeshot.home_perfect_provider.Common.Common.PROVIDERS_REF
-import com.codeshot.home_perfect_provider.Common.Common.SERVICES_REF
+import com.codeshot.home_perfect_provider.common.Common
+import com.codeshot.home_perfect_provider.common.Common.CURRENT_USER_KEY
+import com.codeshot.home_perfect_provider.common.Common.PROVIDERS_REF
+import com.codeshot.home_perfect_provider.common.Common.SERVICES_REF
 import com.codeshot.home_perfect_provider.R
 import com.codeshot.home_perfect_provider.adapters.AdditionsAdapter
 import com.codeshot.home_perfect_provider.databinding.DialogUpdateUserInfoBinding

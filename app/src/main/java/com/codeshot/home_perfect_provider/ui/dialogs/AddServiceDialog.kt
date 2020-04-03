@@ -14,7 +14,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import com.codeshot.home_perfect_provider.Common.Common.SERVICES_REF
+import com.codeshot.home_perfect_provider.common.Common.SERVICES_REF
 import com.codeshot.home_perfect_provider.R
 import com.codeshot.home_perfect_provider.databinding.DialogAddServiceBinding
 import com.codeshot.home_perfect_provider.models.Service

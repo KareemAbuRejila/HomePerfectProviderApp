@@ -8,7 +8,7 @@ import com.codeshot.home_perfect_provider.databinding.ItemRequestBinding
 import com.codeshot.home_perfect_provider.models.Addition
 import com.codeshot.home_perfect_provider.models.Request
 
-class AdditionsAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class AdditionsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private lateinit var itemAdditionBinding: ItemAdditionBinding
     private lateinit var itemRequestBinding: ItemRequestBinding
@@ -19,12 +19,15 @@ class AdditionsAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater=LayoutInflater.from(parent.context)
-        if (typeView==0) {
-            itemAdditionBinding = ItemAdditionBinding.inflate(inflater, parent, false)
-            return AdditionItem(itemAdditionBinding)
-        }else{
-            itemRequestBinding=ItemRequestBinding.inflate(inflater,parent,false)
-            return RequestItem(itemRequestBinding)
+        return  when (typeView) {
+            0 -> {
+                itemAdditionBinding = ItemAdditionBinding.inflate(inflater, parent, false)
+                AdditionItem(itemAdditionBinding)
+            }
+            else -> {
+                itemRequestBinding=ItemRequestBinding.inflate(inflater,parent,false)
+                RequestItem(itemRequestBinding)
+            }
         }
     }
 
@@ -44,10 +47,10 @@ class AdditionsAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         this.typeView=typeView
         notifyDataSetChanged()
     }
-    fun addAddition(addition:Addition){
-        additions.add(addition)
-        notifyDataSetChanged()
-    }
+//    fun addAddition(addition:Addition){
+//        additions.add(addition)
+//        notifyDataSetChanged()
+//    }
     fun setList(additions:ArrayList<Addition>){
         this.additions=additions
         notifyDataSetChanged()
@@ -64,14 +67,14 @@ class AdditionsAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    inner class AdditionItem(val itemAdditionBinding: ItemAdditionBinding):
+    inner class AdditionItem(private val itemAdditionBinding: ItemAdditionBinding):
         RecyclerView.ViewHolder(itemAdditionBinding.root) {
         fun bindItem(addition: Addition){
             itemAdditionBinding.addition=addition
             itemAdditionBinding.executePendingBindings()
         }
     }
-    inner class RequestItem(val itemRequestBinding: ItemRequestBinding):
+    inner class RequestItem(private val itemRequestBinding: ItemRequestBinding):
             RecyclerView.ViewHolder(itemRequestBinding.root){
         fun bindItem(request:Request){
             itemRequestBinding.request=request

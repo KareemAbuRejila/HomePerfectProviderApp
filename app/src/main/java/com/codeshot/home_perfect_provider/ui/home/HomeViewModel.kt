@@ -1,10 +1,9 @@
 package com.codeshot.home_perfect_provider.ui.home
 
 import android.content.SharedPreferences
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.codeshot.home_perfect_provider.Common.Common
+import com.codeshot.home_perfect_provider.common.Common
 import com.codeshot.home_perfect_provider.models.Provider
 import com.google.firebase.firestore.Source
 import com.google.gson.Gson

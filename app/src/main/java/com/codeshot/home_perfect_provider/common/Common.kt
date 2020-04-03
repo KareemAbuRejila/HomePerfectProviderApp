@@ -1,8 +1,7 @@
-package com.codeshot.home_perfect_provider.Common
+package com.codeshot.home_perfect_provider.common
 
 import android.content.Context
 import android.content.SharedPreferences
-import cc.cloudist.acplibrary.ACProgressBaseDialog
 import com.codeshot.home_perfect_provider.remote.IFCMService
 import com.codeshot.home_perfect_provider.services.FCMClient
 import com.google.firebase.firestore.FirebaseFirestore
