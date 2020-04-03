@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Home_Perfect_Provider</string>
+    <string name="update">Update</string>
+
+    <string name="accepted">Accepted</string>
+    <string name="accepte">accepte</string>
+    <string name="waiting">Waiting</string>
+    <string name="in_progress">In Progress</string>
+    <string name="done">Done</string>
+    <string name="rating">Rating</string>
+    <string name="canceled">Canceled</string>
+</resources>

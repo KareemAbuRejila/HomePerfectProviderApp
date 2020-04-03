@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="provider"
+            type="com.codeshot.home_perfect_provider.models.Provider" />
+
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.home.HomeActivity"
+        style="@style/Widget.MaterialComponents.BottomAppBar">
+
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/imgUImage"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/bg_circle_image"
+                    android:elevation="15dp"
+                    app:ImgCProvider="@{provider.personalImageUri}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@tools:sample/avatars" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.appcompat.widget.Toolbar>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize">
+
+            <io.ghyeok.stickyswitch.widget.StickySwitch
+                android:id="@+id/switchStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:ss_animationDuration="300"
+                app:ss_animationType="line"
+                app:ss_iconPadding="12dp"
+                app:ss_iconSize="8dp"
+                app:ss_leftText="offline"
+                app:ss_rightText="online"
+                app:ss_selectedTextSize="12sp"
+                app:ss_sliderBackgroundColor="@android:color/white"
+                app:ss_switchColor="@color/colorPrimaryDark"
+                app:ss_textColor="@color/colorPrimaryDark"
+                app:ss_textSize="8sp"
+                app:status="@{provider.online}" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottomAppBar"
+            style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:backgroundTint="@android:color/white"
+            app:fabAlignmentMode="end"
+            app:fabAnimationMode="scale"
+            app:menu="@menu/botton_app_bar_menu" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:src="@drawable/ic_icon_clock"
+            android:tint="#FA0000"
+            app:backgroundTintMode="multiply"
+            app:layout_anchor="@+id/bottomAppBar"
+            app:layout_anchorGravity="top|center" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

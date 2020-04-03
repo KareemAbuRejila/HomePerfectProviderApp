@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Home_Perfect_Provider</string>
+    <string name="accepted">مقبول</string>
+    <string name="accepte">قبول</string>
+    <string name="waiting">جار الانتظار</string>
+    <string name="in_progress">جار العمل</string>
+    <string name="done">اكتمل</string>
+    <string name="rating">جاري التقيم</string>
+    <string name="canceled">مرفوض</string>
+    <string name="update">تحديث</string>
+</resources>
