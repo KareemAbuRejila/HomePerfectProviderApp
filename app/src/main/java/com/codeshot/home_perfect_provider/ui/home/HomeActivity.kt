@@ -10,6 +10,9 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import cc.cloudist.acplibrary.ACProgressConstant
 import cc.cloudist.acplibrary.ACProgressFlower
 import com.codeshot.home_perfect_provider.common.Common
@@ -38,7 +41,7 @@ import io.ghyeok.stickyswitch.widget.StickySwitch.OnSelectedChangeListener
 class HomeActivity : AppCompatActivity() {
     private val TAG = "HomeActivity"
     private lateinit var activityHomeBinding: ActivityHomeBinding
-//    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var homeViewModel: HomeViewModel
     private var dialogUpdateUserInfo=DialogUpdateUserInfo()
     private var sharedPreferences: SharedPreferences? = null
 
@@ -49,10 +52,13 @@ class HomeActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
-//        homeViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(HomeViewModel::class.java)
         sharedPreferences =Common.getSharedPref(this)
         CURRENT_USER_KEY = FirebaseAuth.getInstance().currentUser!!.uid
         CURRENT_USER_PHONE =FirebaseAuth.getInstance().currentUser!!.phoneNumber.toString()
+        homeViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+            .create(HomeViewModel::class.java)
+        homeViewModel.getInstance(this)
+
         checkIntentData()
         activityHomeBinding.floatingActionButton.setOnClickListener {
             val myRequestsDialog=MyRequestsDialog()
@@ -180,42 +186,13 @@ class HomeActivity : AppCompatActivity() {
             .text("Please Wait ....!")
             .fadeColor(Color.DKGRAY).build()
         acProgressBaseDialog.show()
-        // Source can be CACHE, SERVER, or DEFAULT.
-        val source = Source.SERVER
+        homeViewModel.provider!!.observe(this, Observer {
+            activityHomeBinding.provider = it
+            acProgressBaseDialog.dismiss()
+        })
 
-        val jsonProvider = sharedPreferences!!.getString("provider", "null")
-        PROVIDERS_REF.document(CURRENT_USER_KEY).get(source)
-            .addOnSuccessListener { document ->
-                if (!document!!.exists()) {
-                    supportFragmentManager.executePendingTransactions()
-                    dialogUpdateUserInfo.show(supportFragmentManager, "FullDialogFragment")
-                } else {
-                    val provider = document.toObject(Provider::class.java)
-                    activityHomeBinding.provider = provider
-                }
-                acProgressBaseDialog.hide()
-            }.addOnFailureListener {
-                if (jsonProvider != "null") {
-                    val provider = Gson().fromJson(jsonProvider, Provider::class.java)
-                    provider.online = false
-                    activityHomeBinding.provider = provider
-                    acProgressBaseDialog.hide()
-                }else{
-                    signOut()
-                }
-
-            }
 
     }
-//    fun getProviderData(){
-//        homeViewModel.provider.observe(this, Observer {
-//            if (it==null){
-//                supportFragmentManager.executePendingTransactions()
-//                dialogUpdateUserInfo.show(supportFragmentManager, "FullDialogFragment")
-//            }else
-//                activityHomeBinding.provider=it
-//        })
-//    }
 
      fun signOut(){
         FirebaseAuth.getInstance().signOut()
