@@ -6,7 +6,7 @@
     <data>
         <variable
             name="requestsAdapter"
-            type="com.codeshot.home_perfect_provider.adapters.AdditionsAdapter" />
+            type="com.codeshot.home_perfect_provider.adapters.MyRequestsAdapter" />
 
     </data>
 

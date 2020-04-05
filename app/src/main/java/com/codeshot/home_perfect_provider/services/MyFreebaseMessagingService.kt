@@ -43,7 +43,7 @@ class MyFreebaseMessagingService : FirebaseMessagingService() {
                 showBookingNotificationAPI26(requestId!!,userName!!)
             }else
                 showBookingNotification(requestId!!,userName!!)
-            startBookingActivity(requestId,userName)
+//            startBookingActivity(requestId,userName)
 
         }
     }

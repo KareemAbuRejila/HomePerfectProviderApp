@@ -7,20 +7,32 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import cc.cloudist.acplibrary.ACProgressBaseDialog
 import cc.cloudist.acplibrary.ACProgressConstant
 import cc.cloudist.acplibrary.ACProgressFlower
 import com.andrefrsousa.superbottomsheet.SuperBottomSheetFragment
 import com.codeshot.home_perfect_provider.adapters.AdditionsAdapter
+import com.codeshot.home_perfect_provider.adapters.MyRequestsAdapter
+import com.codeshot.home_perfect_provider.common.Common.LOADING_DIALOG
+import com.codeshot.home_perfect_provider.common.Common.REQUESTS_REF
 import com.codeshot.home_perfect_provider.databinding.RequestsDialogBinding
+import com.codeshot.home_perfect_provider.models.Request
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 
 class MyRequestsDialog: SuperBottomSheetFragment() {
     private lateinit var dialogRequestsDialogBinding: RequestsDialogBinding
     private lateinit var myRequestsViewModel: MyRequestsViewModel
+    private lateinit var myRequestsAdapter: MyRequestsAdapter
+    private lateinit var loadingDialog: ACProgressBaseDialog
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         myRequestsViewModel=ViewModelProvider.AndroidViewModelFactory(activity!!.application).create(MyRequestsViewModel::class.java)
+        loadingDialog = LOADING_DIALOG(requireContext())
+        myRequestsViewModel.getInstance(requireContext())
+        myRequestsViewModel.getRequest()
+
     }
 
     override fun onCreateView(
@@ -35,19 +47,21 @@ class MyRequestsDialog: SuperBottomSheetFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         val bookingsAdapter=AdditionsAdapter()
+        val defaultOption = FirestoreRecyclerOptions.Builder<Request>()
+            .setQuery(REQUESTS_REF, Request::class.java)
+            .build()
+        myRequestsAdapter = MyRequestsAdapter(defaultOption)
         bookingsAdapter.setType(1)
-        myRequestsViewModel.bookings.observe(viewLifecycleOwner, Observer {
-            val acProgressBaseDialog = ACProgressFlower.Builder(requireContext())
-                .direction(ACProgressConstant.DIRECT_CLOCKWISE)
-                .themeColor(Color.WHITE)
-                .text("Please Wait ....!")
-                .fadeColor(Color.DKGRAY).build()
-            acProgressBaseDialog.show()
-            bookingsAdapter.setListRequests(it)
-            acProgressBaseDialog.dismiss()
+        myRequestsViewModel.bookingsOption.observe(viewLifecycleOwner, Observer {
+            myRequestsAdapter.updateOptions(it)
+            loadingDialog.dismiss()
         })
-        dialogRequestsDialogBinding.requestsAdapter=bookingsAdapter
+        dialogRequestsDialogBinding.requestsAdapter = myRequestsAdapter
+    }
+
+    override fun onStart() {
+        super.onStart()
+        myRequestsAdapter.startListening()
     }
 }
