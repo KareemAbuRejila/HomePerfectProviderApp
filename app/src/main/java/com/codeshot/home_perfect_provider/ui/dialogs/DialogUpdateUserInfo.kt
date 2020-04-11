@@ -24,14 +24,15 @@ import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
-import cc.cloudist.acplibrary.ACProgressConstant
-import cc.cloudist.acplibrary.ACProgressFlower
+import cc.cloudist.acplibrary.ACProgressBaseDialog
+
 import com.codeshot.home_perfect_provider.common.Common
 import com.codeshot.home_perfect_provider.common.Common.CURRENT_USER_KEY
 import com.codeshot.home_perfect_provider.common.Common.PROVIDERS_REF
 import com.codeshot.home_perfect_provider.common.Common.SERVICES_REF
 import com.codeshot.home_perfect_provider.R
 import com.codeshot.home_perfect_provider.adapters.AdditionsAdapter
+import com.codeshot.home_perfect_provider.common.Common.LOADING_DIALOG
 import com.codeshot.home_perfect_provider.databinding.DialogUpdateUserInfoBinding
 import com.codeshot.home_perfect_provider.models.Addition
 import com.codeshot.home_perfect_provider.models.Provider
@@ -61,6 +62,7 @@ class DialogUpdateUserInfo : DialogFragment {
     var selectedService: Service? = null
     var additions = ArrayList<Addition>()
     val additionsAdapter = AdditionsAdapter()
+    private lateinit var loadingDialog: ACProgressBaseDialog
 
     constructor() : super()
 
@@ -85,8 +87,8 @@ class DialogUpdateUserInfo : DialogFragment {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        loadingDialog = LOADING_DIALOG(context!!)
         dialogUpdateUserInfoBinding.ccp.registerPhoneNumberTextView(dialogUpdateUserInfoBinding.edtPhone)
-
         dialogUpdateUserInfoBinding.fullDialogClose.setOnClickListener { v: View? ->
             super.dismiss()
         }
@@ -162,15 +164,17 @@ class DialogUpdateUserInfo : DialogFragment {
     }
 
     private fun updateProviderData() {
+        loadingDialog.show()
         val providerRef = PROVIDERS_REF.document(CURRENT_USER_KEY)
         providerRef.update(data).addOnSuccessListener {
             providerRef.update("address", address).addOnSuccessListener {
-                providerRef.update("additions", additions).addOnFailureListener {
-                    Toast.makeText(activity, "Sucess", Toast.LENGTH_SHORT).show()
+                providerRef.update("additions", additions).addOnSuccessListener {
                     data.clear()
                     address.clear()
-                }
-            }
+                    dismiss()
+                    loadingDialog.dismiss()
+                }.addOnFailureListener { loadingDialog.dismiss() }
+            }.addOnFailureListener { loadingDialog.dismiss() }
 
         }
 
@@ -196,7 +200,7 @@ class DialogUpdateUserInfo : DialogFragment {
         }
     }
 
-    var gender = ""
+    var gender = "Male"
     private fun setUpGender() {
         dialogUpdateUserInfoBinding.genderSwitch.setDirection(StickySwitch.Direction.LEFT)
         dialogUpdateUserInfoBinding.genderSwitch.onSelectedChangeListener =
@@ -371,32 +375,24 @@ class DialogUpdateUserInfo : DialogFragment {
     }
 
     private fun getProviderData() {
-        val acProgressBaseDialog = ACProgressFlower.Builder(context)
-            .direction(ACProgressConstant.DIRECT_CLOCKWISE)
-            .themeColor(Color.WHITE)
-            .text("Please Wait ....!")
-            .fadeColor(Color.DKGRAY).build()
-        acProgressBaseDialog.show()
+        if (FirebaseAuth.getInstance().currentUser!!.phoneNumber != ""
+            && FirebaseAuth.getInstance().currentUser!!.phoneNumber != null
+        ) {
+            dialogUpdateUserInfoBinding.edtUserPhoneDialog.setText(FirebaseAuth.getInstance().currentUser!!.phoneNumber)
+            dialogUpdateUserInfoBinding.edtUserPhoneDialog.isEnabled = false
+        }
+        loadingDialog.show()
         PROVIDERS_REF.document(Common.CURRENT_USER_KEY)
             .get().addOnSuccessListener {
                 if (it.exists()) {
                     update = true
+                    super.setCancelable(true)
                     dialogUpdateUserInfoBinding.btnSaveDialog.setText(R.string.update)
                     val provider = it.toObject(Provider::class.java)
                     providerImgUrl = provider!!.personalImageUri
                     additions = provider.additions
                     dialogUpdateUserInfoBinding.provider = provider
-//                    Picasso.get().load(providerImgUrl).placeholder(R.drawable.ic_person_black_24dp).into(dialogUpdateUserInfoBinding.imgUserImage)
-//                    dialogUpdateUserInfoBinding.edtPerHour.setText(provider.perHour.toString())
-//                    dialogUpdateUserInfoBinding.edtUserNameDialog.setText(provider.userName.toString())
-//                    dialogUpdateUserInfoBinding.edtUserPhoneDialog.setText(provider.phone.toString())
                     dialogUpdateUserInfoBinding.edtUserPhoneDialog.isEnabled = false
-//                    dialogUpdateUserInfoBinding.tvDate.setText(provider.birthDay.toString())
-//                    dialogUpdateUserInfoBinding.tvAge.setText(provider.age.toString())
-//                    dialogUpdateUserInfoBinding.edtCity.setText(provider.address["city"])
-//                    dialogUpdateUserInfoBinding.edtStreet.setText(provider.address["street"])
-//                    dialogUpdateUserInfoBinding.edtHome.setText(provider.address["home"])
-//                    dialogUpdateUserInfoBinding.edtFlaor.setText(provider.address["level"])
                     additionsAdapter.setList(additions)
                     dialogUpdateUserInfoBinding.serviceSpinner.visibility = View.GONE
                     selectedService = Service(provider.serviceId, provider.serviceType)
@@ -405,12 +401,12 @@ class DialogUpdateUserInfo : DialogFragment {
                     else
                         dialogUpdateUserInfoBinding.genderSwitch.setDirection(direction = StickySwitch.Direction.RIGHT)
                     dialogUpdateUserInfoBinding.btnSaveDialog.visibility = VISIBLE
-                    acProgressBaseDialog.dismiss()
+                    loadingDialog.dismiss()
                     setUpView()
 
 
                 } else {
-                    acProgressBaseDialog.dismiss()
+                    loadingDialog.dismiss()
                     return@addOnSuccessListener
                 }
 
@@ -544,7 +540,7 @@ class DialogUpdateUserInfo : DialogFragment {
 
     override fun onDetach() {
         val parent = activity as HomeActivity
-        parent.checkProviderData()
+        parent.checkNewProviderData()
         super.onDetach()
     }
 }

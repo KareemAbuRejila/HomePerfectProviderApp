@@ -42,27 +42,27 @@ class HomeActivity : AppCompatActivity() {
     private val TAG = "HomeActivity"
     private lateinit var activityHomeBinding: ActivityHomeBinding
     private lateinit var homeViewModel: HomeViewModel
-    private var dialogUpdateUserInfo=DialogUpdateUserInfo()
+    private var dialogUpdateUserInfo = DialogUpdateUserInfo()
     private var sharedPreferences: SharedPreferences? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activityHomeBinding = DataBindingUtil.setContentView(this,R.layout.activity_home)
+        activityHomeBinding = DataBindingUtil.setContentView(this, R.layout.activity_home)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
-        sharedPreferences =Common.getSharedPref(this)
+        sharedPreferences = Common.getSharedPref(this)
         CURRENT_USER_KEY = FirebaseAuth.getInstance().currentUser!!.uid
-        CURRENT_USER_PHONE =FirebaseAuth.getInstance().currentUser!!.phoneNumber.toString()
+        CURRENT_USER_PHONE = FirebaseAuth.getInstance().currentUser!!.phoneNumber.toString()
         homeViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
             .create(HomeViewModel::class.java)
         homeViewModel.getInstance(this)
 
         checkIntentData()
         activityHomeBinding.floatingActionButton.setOnClickListener {
-            val myRequestsDialog=MyRequestsDialog()
-            myRequestsDialog.show(supportFragmentManager,"MyRequestsDialog")
+            val myRequestsDialog = MyRequestsDialog()
+            myRequestsDialog.show(supportFragmentManager, "MyRequestsDialog")
         }
         activityHomeBinding.imgUImage.setOnClickListener {
             dialogUpdateUserInfo.show(this.supportFragmentManager, "FullDialogFragment")
@@ -82,19 +82,20 @@ class HomeActivity : AppCompatActivity() {
         setupBottomBar()
 
     }
-    private fun setupBottomBar(){
+
+    private fun setupBottomBar() {
         activityHomeBinding.bottomAppBar.setOnMenuItemClickListener {
-            when(it.itemId){
-                R.id.nav_addService->{
+            when (it.itemId) {
+                R.id.nav_addService -> {
                     val dialogFragment = AddServiceDialog()
                     dialogFragment.show(this.supportFragmentManager, "AddServiceDialog")
                     true
                 }
-                R.id.nav_SignOut->{
+                R.id.nav_SignOut -> {
                     signOut()
                     true
                 }
-                else->false
+                else -> false
             }
         }
 
@@ -145,7 +146,7 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkNewProviderData() {
+    fun checkNewProviderData() {
         val acProgressBaseDialog = ACProgressFlower.Builder(this)
             .direction(ACProgressConstant.DIRECT_CLOCKWISE)
             .themeColor(Color.WHITE)
@@ -179,26 +180,55 @@ class HomeActivity : AppCompatActivity() {
             }
     }
 
-    fun checkProviderData() {
+    private fun checkProviderData() {
         val acProgressBaseDialog = ACProgressFlower.Builder(this)
             .direction(ACProgressConstant.DIRECT_CLOCKWISE)
             .themeColor(Color.WHITE)
             .text("Please Wait ....!")
             .fadeColor(Color.DKGRAY).build()
         acProgressBaseDialog.show()
-        homeViewModel.provider!!.observe(this, Observer {
-            activityHomeBinding.provider = it
+        PROVIDERS_REF.document(CURRENT_USER_KEY).get().addOnSuccessListener { Doc ->
+            if (!Doc.exists()) {
+                dialogUpdateUserInfo.show(this.supportFragmentManager, "FullDialogFragment")
+                acProgressBaseDialog.dismiss()
+                return@addOnSuccessListener
+            }
+            val provider = Doc.toObject(Provider::class.java)
+            val jsonProvider = Gson().toJson(provider)
+            sharedPreferences!!.edit().putString("provider", jsonProvider).apply()
+            activityHomeBinding.provider = provider
             acProgressBaseDialog.dismiss()
-        })
-
+        }.addOnFailureListener { e ->
+            val jsonProvider = sharedPreferences!!.getString("provider", "null")
+            if (jsonProvider != "null") {
+                val provider = Gson().fromJson(jsonProvider, Provider::class.java)
+                provider.online = false
+                activityHomeBinding.provider = provider
+                acProgressBaseDialog.dismiss()
+            } else {
+                HomeActivity().signOut()
+            }
+        }
+//
+//        homeViewModel.provider!!.observe(this, Observer {
+//            activityHomeBinding.provider = it
+//            acProgressBaseDialog.dismiss()
+//        })
+//
 
     }
 
-     fun signOut(){
+    fun signOut() {
         FirebaseAuth.getInstance().signOut()
-        startActivity(Intent(this,
-            LoginActivity::class.java))
+        startActivity(
+            Intent(
+                this,
+                LoginActivity::class.java
+            )
+        )
+        sharedPreferences!!.edit().remove("provider").apply()
         finish()
     }
+
 
 }

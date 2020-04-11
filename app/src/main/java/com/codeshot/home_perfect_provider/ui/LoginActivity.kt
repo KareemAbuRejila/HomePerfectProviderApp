@@ -19,6 +19,7 @@ import cc.cloudist.acplibrary.ACProgressBaseDialog
 import cc.cloudist.acplibrary.ACProgressConstant
 import cc.cloudist.acplibrary.ACProgressFlower
 import com.codeshot.home_perfect_provider.R
+import com.codeshot.home_perfect_provider.common.Common.USERS_REF
 import com.codeshot.home_perfect_provider.databinding.ActivityLoginBinding
 import com.codeshot.home_perfect_provider.databinding.DialogLoginBinding
 import com.codeshot.home_perfect_provider.ui.home.HomeActivity
@@ -66,15 +67,15 @@ class LoginActivity : AppCompatActivity() {
             AlertDialog.Builder(this)
                 .setPositiveButton("Login",
                     DialogInterface.OnClickListener { dialog, which ->
-                        LoginDialog("in")
+                        loginDialog("in")
                     })
                 .setNegativeButton("SignUp", DialogInterface.OnClickListener { dialog, which ->
-                    SignUpDialog("up")
+                    signUpDialog("up")
                 }).create()
         alertDialog.show()
     }
 
-    private fun SignUpDialog(s: String) {
+    private fun signUpDialog(s: String) {
         val dialogbinding = DialogLoginBinding.inflate(
             layoutInflater,
             activityLoginBinding.root as ViewGroup?, false
@@ -98,7 +99,7 @@ class LoginActivity : AppCompatActivity() {
         signupDiaog.show()
     }
 
-    private fun LoginDialog(s: String) {
+    private fun loginDialog(s: String) {
         val dialogbinding = DialogLoginBinding.inflate(
             layoutInflater,
             activityLoginBinding.root as ViewGroup?, false
@@ -132,26 +133,36 @@ class LoginActivity : AppCompatActivity() {
             return
     }
 
+
     private fun sendVerificationCode() {
         val phoneNamber = activityLoginBinding.ccpLogin.fullNumberWithPlus
-        Toast.makeText(
-            this@LoginActivity,
-            phoneNamber,
-            Toast.LENGTH_SHORT
-        ).show()
         if (phoneNamber.isEmpty()) {
             activityLoginBinding.edtPhoneLogin.error = "Phone Number is required  "
         } else if (phoneNamber.length < 10) {
             activityLoginBinding.edtPhoneLogin.error = "Check your Phone Number "
         } else {
             progressBar.show()
-            PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                phoneNamber,  // Phone number to verify
-                60,  // Timeout duration
-                TimeUnit.SECONDS,  // Unit of timeout
-                this,  // Activity (for callback binding)
-                mCallbacks
-            ) // OnVerificationStateChangedCallbacks
+            USERS_REF.whereEqualTo("phone", phoneNamber)
+                .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                    if (firebaseFirestoreException != null) return@addSnapshotListener
+                    if (querySnapshot!!.isEmpty) {
+                        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                            phoneNamber,  // Phone number to verify
+                            60,  // Timeout duration
+                            TimeUnit.SECONDS,  // Unit of timeout
+                            this,  // Activity (for callback binding)
+                            mCallbacks
+                        ) // OnVerificationStateChangedCallbacks
+                    } else {
+                        progressBar.dismiss()
+                        Toast.makeText(this, "This Number used by User Account", Toast.LENGTH_LONG)
+                            .show()
+                        return@addSnapshotListener
+                    }
+
+                }
+
+
         }
     }
 
@@ -218,7 +229,7 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun sendToHomeActivity(userType:String){
+    private fun sendToHomeActivity(userType: String) {
         val homeIntent = Intent(this, HomeActivity::class.java)
         homeIntent.putExtra("user", userType)
         startActivity(homeIntent)

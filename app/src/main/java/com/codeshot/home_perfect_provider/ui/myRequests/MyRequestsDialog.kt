@@ -32,6 +32,7 @@ class MyRequestsDialog: SuperBottomSheetFragment() {
         loadingDialog = LOADING_DIALOG(requireContext())
         myRequestsViewModel.getInstance(requireContext())
         myRequestsViewModel.getRequest()
+        loadingDialog.show()
 
     }
 
