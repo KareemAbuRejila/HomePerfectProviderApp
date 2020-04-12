@@ -10,8 +10,6 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import cc.cloudist.acplibrary.ACProgressConstant
 import cc.cloudist.acplibrary.ACProgressFlower
@@ -44,6 +42,8 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var homeViewModel: HomeViewModel
     private var dialogUpdateUserInfo = DialogUpdateUserInfo()
     private var sharedPreferences: SharedPreferences? = null
+    private var provider: Provider? = null
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +61,7 @@ class HomeActivity : AppCompatActivity() {
 
         checkIntentData()
         activityHomeBinding.floatingActionButton.setOnClickListener {
-            val myRequestsDialog = MyRequestsDialog()
+            val myRequestsDialog = MyRequestsDialog(provider!!.requests)
             myRequestsDialog.show(supportFragmentManager, "MyRequestsDialog")
         }
         activityHomeBinding.imgUImage.setOnClickListener {
@@ -155,7 +155,6 @@ class HomeActivity : AppCompatActivity() {
         acProgressBaseDialog.show()
         // Source can be CACHE, SERVER, or DEFAULT.
         val source = Source.SERVER
-        var provider: Provider?
         PROVIDERS_REF.document(CURRENT_USER_KEY).get(source)
             .addOnSuccessListener { document ->
                 if (!document!!.exists()) {
@@ -193,7 +192,7 @@ class HomeActivity : AppCompatActivity() {
                 acProgressBaseDialog.dismiss()
                 return@addOnSuccessListener
             }
-            val provider = Doc.toObject(Provider::class.java)
+            provider = Doc.toObject(Provider::class.java)
             val jsonProvider = Gson().toJson(provider)
             sharedPreferences!!.edit().putString("provider", jsonProvider).apply()
             activityHomeBinding.provider = provider
