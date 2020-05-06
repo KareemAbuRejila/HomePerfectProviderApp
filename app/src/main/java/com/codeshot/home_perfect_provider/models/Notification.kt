@@ -6,6 +6,7 @@ class Notification {
     var providerId: String? = null
     var requestId: String? = null
     var notiType: String? = null
+    var time: String? = null
 
     var msgContent: MutableMap<String, String> = HashMap()
 

@@ -1,14 +1,12 @@
 package com.codeshot.home_perfect_provider.ui.requestActivity
 
-import android.graphics.Color
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import cc.cloudist.acplibrary.ACProgressBaseDialog
-import cc.cloudist.acplibrary.ACProgressConstant
-import cc.cloudist.acplibrary.ACProgressFlower
 import com.codeshot.home_perfect_provider.common.Common
 import com.codeshot.home_perfect_provider.common.Common.REQUESTS_REF
 import com.codeshot.home_perfect_provider.common.Common.TOKENS_REF
@@ -16,18 +14,20 @@ import com.codeshot.home_perfect_provider.common.Common.USERS_REF
 import com.codeshot.home_perfect_provider.R
 import com.codeshot.home_perfect_provider.adapters.AdditionsAdapter
 import com.codeshot.home_perfect_provider.common.Common.LOADING_DIALOG
-import com.codeshot.home_perfect_provider.common.Common.NOTIFICATIONS_REF
-import com.codeshot.home_perfect_provider.common.Common.PROVIDERS_REF
 import com.codeshot.home_perfect_provider.databinding.ActivityRequestBinding
 import com.codeshot.home_perfect_provider.models.*
 import com.codeshot.home_perfect_provider.remote.IFCMService
-import com.google.android.gms.tasks.Tasks
+import com.codeshot.home_perfect_provider.ui.main.MainActivity
+import com.codeshot.home_perfect_provider.util.TimeUtil
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.squareup.picasso.Picasso
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class RequestActivity : AppCompatActivity() {
@@ -64,6 +64,7 @@ class RequestActivity : AppCompatActivity() {
                 .get().addOnSuccessListener { requsetDoc ->
                     if (requsetDoc.exists()) {
                         request = requsetDoc.toObject(Request::class.java)
+                        if (request!!.status != "waiting") sendToHome()
                         request!!.id = requsetDoc.id
                         USERS_REF.document(request!!.from!!)
                             .get().addOnSuccessListener { userDoc ->
@@ -83,8 +84,13 @@ class RequestActivity : AppCompatActivity() {
         }
     }
 
+    private fun sendToHome() {
+        startActivity(Intent(this@RequestActivity, MainActivity::class.java))
+        finish()
+    }
+
     private fun setUpAdditionsList(additions: ArrayList<Addition>) {
-        if (additions.size != 0) {
+        if (additions.size != 0 && additions != null) {
             val adapter = AdditionsAdapter()
             adapter.setType(0)
             adapter.setList(request!!.additions)
@@ -103,7 +109,6 @@ class RequestActivity : AppCompatActivity() {
         }
         return null
     }
-
 
     private fun accept() {
         loadingDialog.show()
@@ -125,50 +130,47 @@ class RequestActivity : AppCompatActivity() {
                                     response: Response<FCMResponse>
                                 ) {
                                     if (response.isSuccessful) {
-                                        REQUESTS_REF.document(request!!.id!!)
-                                            .update("status", "accepted")
+//                                        REQUESTS_REF.document(request!!.id!!)
+//                                            .update("status", "accepted")
+//                                            .addOnSuccessListener {
+//                                                Toast.makeText(
+//                                                    this@RequestActivity,
+//                                                    "Accepted",
+//                                                    Toast.LENGTH_SHORT
+//                                                ).show()
+//                                                loadingDialog.dismiss()
+//                                                onDestroy()
+//                                            }.addOnFailureListener { loadingDialog.dismiss() }
+                                        val notification = Notification(
+                                            customerId = request!!.from,
+                                            providerId = request!!.to,
+                                            requestId = request!!.id!!,
+                                            notiType = "accepted"
+                                        )
+                                        notification.time = TimeUtil.getDefaultTimeText(
+                                            System.currentTimeMillis(),
+                                            TimeZone.getDefault()
+                                        )
+                                        USERS_REF.document(notification.customerId!!)
+                                            .update(
+                                                "notifications",
+                                                FieldValue.arrayUnion(notification)
+                                            )
                                             .addOnSuccessListener {
-                                                Toast.makeText(
-                                                    this@RequestActivity,
-                                                    "Accepted",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                                loadingDialog.dismiss()
-                                                finish()
-                                            }.addOnFailureListener { loadingDialog.dismiss() }
-//                                        val notification = Notification(
-//                                            customerId = request!!.from,
-//                                            providerId = request!!.to,
-//                                            requestId = request!!.id!!,
-//                                            notiType = "request"
-//                                        )
-//                                        NOTIFICATIONS_REF.add(notification).addOnSuccessListener {notDoc->
-//                                            REQUESTS_REF.document(notification.requestId!!)
-//                                                .update("status", "accepted")
-//                                                .addOnSuccessListener {
-//                                            Toast.makeText(
-//                                                this@RequestActivity,
-//                                                "Accepted",
-//                                                Toast.LENGTH_SHORT
-//                                            ).show()
-//                                            loadingDialog.dismiss()
-//                                            finish()
-//                                        }.addOnFailureListener { loadingDialog.dismiss() }
-//                                            val taskUser= USERS_REF.document(notification.customerId!!)
-//                                                .update("notifications",FieldValue.arrayUnion(notDoc.id))
-//                                            val taskProvider= PROVIDERS_REF.document(notification.providerId!!)
-//                                                .update("notifications",FieldValue.arrayUnion(notDoc.id))
-//                                            Tasks.whenAllSuccess<Tasks>(taskStatus,taskUser,taskProvider)
-//                                                .addOnSuccessListener {
-//                                                    Toast.makeText(
-//                                                        this@RequestActivity,
-//                                                        "Accepted",
-//                                                        Toast.LENGTH_SHORT
-//                                                    ).show()
-//                                                    loadingDialog.dismiss()
-//                                                    finish()
-//                                                }.addOnFailureListener { loadingDialog.dismiss() }
-//                                        }
+                                                REQUESTS_REF.document(notification.requestId!!)
+                                                    .update("status", "accepted")
+                                                    .addOnSuccessListener {
+                                                        Toast.makeText(
+                                                            this@RequestActivity,
+                                                            "Accepted",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                        loadingDialog.dismiss()
+                                                        finish()
+                                                    }
+                                                    .addOnFailureListener { loadingDialog.dismiss() }
+                                            }
+                                            .addOnFailureListener { loadingDialog.dismiss() }
                                     } else {
                                         Toast.makeText(
                                             this@RequestActivity,
@@ -205,7 +207,7 @@ class RequestActivity : AppCompatActivity() {
                         val msgContent: MutableMap<String, String> = HashMap()
                         msgContent["title"] = "Booking"
                         msgContent["requestId"] = request!!.id!!
-                        msgContent["requestStatus"] = "Canceled"
+                        msgContent["requestStatus"] = "canceled"
                         val dataMsg = DataMessage(userToken.token, msgContent)
                         fcmService.sendMessage(dataMsg)
                             .enqueue(object : Callback<FCMResponse> {
@@ -214,16 +216,47 @@ class RequestActivity : AppCompatActivity() {
                                     response: Response<FCMResponse>
                                 ) {
                                     if (response.isSuccessful) {
-                                        REQUESTS_REF.document(request!!.id!!)
-                                            .update("status", "canceled")
+//                                        REQUESTS_REF.document(request!!.id!!)
+//                                            .update("status", "accepted")
+//                                            .addOnSuccessListener {
+//                                                Toast.makeText(
+//                                                    this@RequestActivity,
+//                                                    "Accepted",
+//                                                    Toast.LENGTH_SHORT
+//                                                ).show()
+//                                                loadingDialog.dismiss()
+//                                                onDestroy()
+//                                            }.addOnFailureListener { loadingDialog.dismiss() }
+                                        val notification = Notification(
+                                            customerId = request!!.from,
+                                            providerId = request!!.to,
+                                            requestId = request!!.id!!,
+                                            notiType = "canceled"
+                                        )
+                                        notification.time = TimeUtil.getDefaultTimeText(
+                                            System.currentTimeMillis(),
+                                            TimeZone.getDefault()
+                                        )
+                                        USERS_REF.document(notification.customerId!!)
+                                            .update(
+                                                "notifications",
+                                                FieldValue.arrayUnion(notification)
+                                            )
                                             .addOnSuccessListener {
-                                                Toast.makeText(
-                                                    this@RequestActivity,
-                                                    "Canceled",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                                finish()
+                                                REQUESTS_REF.document(notification.requestId!!)
+                                                    .update("status", "canceled")
+                                                    .addOnSuccessListener {
+                                                        Toast.makeText(
+                                                            this@RequestActivity,
+                                                            "Canceled",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                        loadingDialog.dismiss()
+                                                        finish()
+                                                    }
+                                                    .addOnFailureListener { loadingDialog.dismiss() }
                                             }
+                                            .addOnFailureListener { loadingDialog.dismiss() }
                                     } else {
                                         Toast.makeText(
                                             this@RequestActivity,

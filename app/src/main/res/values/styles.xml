@@ -8,6 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:fontFamily">@font/helvetica_neue</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
 
     </style>
 
@@ -15,21 +17,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowTranslucentStatus">true</item>
-    </style>
-    <style name="HomeActivity" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:statusBarColor">@android:color/white</item>
-        <item name="backgroundColor">@android:color/white</item>
-        <item name="colorOnSecondary">@color/colorAccent</item>
-        <item name="colorOnPrimary">@color/colorPrimaryDark</item>
-        <item name="materialAlertDialogBodyTextStyle">@style/TextAppearance.AppCompat.Small</item>
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowSoftInputMode">adjustResize</item>
-
-
     </style>
 
 

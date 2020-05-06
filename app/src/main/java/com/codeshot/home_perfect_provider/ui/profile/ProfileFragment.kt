@@ -1,5 +1,4 @@
-package com.codeshot.home_perfect_provider.ui.dialogs
-
+package com.codeshot.home_perfect_provider.ui.profile
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -7,32 +6,29 @@ import android.app.DatePickerDialog
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
+import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.view.ContextThemeWrapper
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnFocusChangeListener
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import cc.cloudist.acplibrary.ACProgressBaseDialog
 
+import com.codeshot.home_perfect_provider.R
+import com.codeshot.home_perfect_provider.adapters.AdditionsAdapter
 import com.codeshot.home_perfect_provider.common.Common
 import com.codeshot.home_perfect_provider.common.Common.CURRENT_USER_KEY
 import com.codeshot.home_perfect_provider.common.Common.PROVIDERS_REF
 import com.codeshot.home_perfect_provider.common.Common.SERVICES_REF
-import com.codeshot.home_perfect_provider.R
-import com.codeshot.home_perfect_provider.adapters.AdditionsAdapter
-import com.codeshot.home_perfect_provider.common.Common.LOADING_DIALOG
-import com.codeshot.home_perfect_provider.databinding.DialogUpdateUserInfoBinding
+import com.codeshot.home_perfect_provider.databinding.FragmentProfileBinding
+import com.codeshot.home_perfect_provider.databinding.FragmentRequestsBinding
 import com.codeshot.home_perfect_provider.models.Addition
 import com.codeshot.home_perfect_provider.models.Provider
 import com.codeshot.home_perfect_provider.models.Service
@@ -49,11 +45,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-/**
- * A simple [Fragment] subclass.
- */
-class DialogUpdateUserInfo : DialogFragment {
-    private lateinit var dialogUpdateUserInfoBinding: DialogUpdateUserInfoBinding
+class ProfileFragment : Fragment() {
+    private lateinit var fragmentProfileBinding: FragmentProfileBinding
+
     private val Gellary_Key = 7000
     var update = false
     private var imageUri: Uri? = null
@@ -63,41 +57,40 @@ class DialogUpdateUserInfo : DialogFragment {
     val additionsAdapter = AdditionsAdapter()
     private lateinit var loadingDialog: ACProgressBaseDialog
 
-    constructor() : super()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.FullDialogTheme)
-        // Access a Cloud Firestore instance from your Activity
-        super.setCancelable(false)
-
+    companion object {
+        fun newInstance() = ProfileFragment()
     }
+
+    private lateinit var viewModel: ProfileViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        val infalter2 = LayoutInflater.from(ContextThemeWrapper(activity, R.style.FullDialogTheme))
-        dialogUpdateUserInfoBinding =
-            DialogUpdateUserInfoBinding.inflate(infalter2, container, false)
-        return dialogUpdateUserInfoBinding.root
+        fragmentProfileBinding = FragmentProfileBinding.inflate(inflater, container, false)
+        return fragmentProfileBinding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        loadingDialog = LOADING_DIALOG(requireContext())
-        dialogUpdateUserInfoBinding.ccp.registerPhoneNumberTextView(dialogUpdateUserInfoBinding.edtPhone)
-        dialogUpdateUserInfoBinding.fullDialogClose.setOnClickListener { v: View? ->
-            super.dismiss()
-        }
-        dialogUpdateUserInfoBinding.edtUserNameDialog.onFocusChangeListener =
+        viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
+        // TODO: Use the ViewModel
+        viewModel.connected.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            if (it) fragmentProfileBinding.btnSaveDialog.visibility = VISIBLE
+            else fragmentProfileBinding.btnSaveDialog.visibility = GONE
+        })
+        loadingDialog = Common.LOADING_DIALOG(requireContext())
+//        fragmentProfileBinding.ccp.registerPhoneNumberTextView(fragmentProfileBinding.edtPhone)
+//        fragmentProfileBinding.fullDialogClose.setOnClickListener { v: View? ->
+//            super.dismiss()
+//        }
+        fragmentProfileBinding.edtUserNameDialog.onFocusChangeListener =
             OnFocusChangeListener { v, hasFocus ->
                 if (hasFocus)
-                    dialogUpdateUserInfoBinding.btnSaveDialog.visibility = VISIBLE
+                    fragmentProfileBinding.btnSaveDialog.visibility = VISIBLE
             }
 
-        dialogUpdateUserInfoBinding.btnSaveDialog
+        fragmentProfileBinding.btnSaveDialog
             .setOnClickListener {
                 if (!update)
                     saveProviderData()
@@ -105,16 +98,16 @@ class DialogUpdateUserInfo : DialogFragment {
                     updateProviderData()
 
             }
-        dialogUpdateUserInfoBinding.imgUserImage.setOnClickListener { showImageInDialog() }
+        fragmentProfileBinding.imgUserImage.setOnClickListener { showImageInDialog() }
         // Source can be CACHE, SERVER, or DEFAULT.
         val source = Source.CACHE
         PROVIDERS_REF.document(CURRENT_USER_KEY)
             .get(source).addOnSuccessListener { document ->
                 if (!document!!.exists()) {
-                    dialogUpdateUserInfoBinding.fullDialogClose.visibility = View.GONE
+//                    fragmentProfileBinding.fullDialogClose.visibility = View.GONE
                 }
             }
-        dialogUpdateUserInfoBinding.btnAddAddition.setOnClickListener {
+        fragmentProfileBinding.btnAddAddition.setOnClickListener {
             addAddition()
         }
 
@@ -130,34 +123,34 @@ class DialogUpdateUserInfo : DialogFragment {
     val address = HashMap<String, String>()
 
     private fun setUpView() {
-        dialogUpdateUserInfoBinding.edtUserNameDialog.addTextChangedListener {
+        fragmentProfileBinding.edtUserNameDialog.addTextChangedListener {
             data["userName"] = it.toString()
         }
-        dialogUpdateUserInfoBinding.edtPerHour.addTextChangedListener {
+        fragmentProfileBinding.edtPerHour.addTextChangedListener {
             data["perHour"] = it.toString().toDouble()
         }
-        dialogUpdateUserInfoBinding.tvDate.addTextChangedListener {
+        fragmentProfileBinding.tvDate.addTextChangedListener {
             data["birthDay"] = it.toString()
         }
-        dialogUpdateUserInfoBinding.tvAge.addTextChangedListener {
+        fragmentProfileBinding.tvAge.addTextChangedListener {
             data["age"] = it.toString().toInt()
         }
-        dialogUpdateUserInfoBinding.genderSwitch
+        fragmentProfileBinding.genderSwitch
             .onSelectedChangeListener = object : StickySwitch.OnSelectedChangeListener {
             override fun onSelectedChange(direction: StickySwitch.Direction, text: String) {
                 data["gender"] = text
             }
         }
-        dialogUpdateUserInfoBinding.edtCity.addTextChangedListener {
+        fragmentProfileBinding.edtCity.addTextChangedListener {
             address["city"] = it.toString()
         }
-        dialogUpdateUserInfoBinding.edtHome.addTextChangedListener {
+        fragmentProfileBinding.edtHome.addTextChangedListener {
             address["home"] = it.toString()
         }
-        dialogUpdateUserInfoBinding.edtStreet.addTextChangedListener {
+        fragmentProfileBinding.edtStreet.addTextChangedListener {
             address["street"] = it.toString()
         }
-        dialogUpdateUserInfoBinding.edtFlaor.addTextChangedListener {
+        fragmentProfileBinding.edtFlaor.addTextChangedListener {
             address["level"] = it.toString()
         }
     }
@@ -170,7 +163,6 @@ class DialogUpdateUserInfo : DialogFragment {
                 providerRef.update("additions", additions).addOnSuccessListener {
                     data.clear()
                     address.clear()
-                    dismiss()
                     loadingDialog.dismiss()
                 }.addOnFailureListener { loadingDialog.dismiss() }
             }.addOnFailureListener { loadingDialog.dismiss() }
@@ -182,15 +174,15 @@ class DialogUpdateUserInfo : DialogFragment {
 
     private fun setAdditions() {
         additionsAdapter.setType(0)
-        dialogUpdateUserInfoBinding.additionsAdapter = additionsAdapter
-        dialogUpdateUserInfoBinding.edtAdditionName.setOnEditorActionListener() { v, actionId, event ->
+        fragmentProfileBinding.additionsAdapter = additionsAdapter
+        fragmentProfileBinding.edtAdditionName.setOnEditorActionListener() { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 addAddition()
                 true
             } else
                 false
         }
-        dialogUpdateUserInfoBinding.edtAdditionPrice.setOnEditorActionListener() { v, actionId, event ->
+        fragmentProfileBinding.edtAdditionPrice.setOnEditorActionListener() { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 addAddition()
                 true
@@ -201,8 +193,8 @@ class DialogUpdateUserInfo : DialogFragment {
 
     var gender = "Male"
     private fun setUpGender() {
-        dialogUpdateUserInfoBinding.genderSwitch.setDirection(StickySwitch.Direction.LEFT)
-        dialogUpdateUserInfoBinding.genderSwitch.onSelectedChangeListener =
+        fragmentProfileBinding.genderSwitch.setDirection(StickySwitch.Direction.LEFT)
+        fragmentProfileBinding.genderSwitch.onSelectedChangeListener =
             object : StickySwitch.OnSelectedChangeListener {
                 override fun onSelectedChange(direction: StickySwitch.Direction, text: String) {
                     gender = text
@@ -216,19 +208,19 @@ class DialogUpdateUserInfo : DialogFragment {
     private fun getCurrentDate() {
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("dd MMM YYYY", Locale.getDefault()).format(calendar.time)
-        dialogUpdateUserInfoBinding.tvDate.text = dateFormat.toString()
+        fragmentProfileBinding.tvDate.text = dateFormat.toString()
 
-        dialogUpdateUserInfoBinding.tvDate.setOnClickListener {
+        fragmentProfileBinding.tvDate.setOnClickListener {
             val calendarDialog = DatePickerDialog(
-                dialog!!.context,
+                requireContext(),
                 DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
                     val c = Calendar.getInstance()
                     c.set(Calendar.YEAR, year)
                     c.set(Calendar.MONTH, month)
                     c.set(Calendar.DAY_OF_MONTH, dayOfMonth)
                     birthay = SimpleDateFormat("dd MMM YYYY", Locale.getDefault()).format(c.time)
-                    dialogUpdateUserInfoBinding.tvDate.text = birthay
-                    dialogUpdateUserInfoBinding.tvAge.text = calculateAge(c.timeInMillis).toString()
+                    fragmentProfileBinding.tvDate.text = birthay
+                    fragmentProfileBinding.tvAge.text = calculateAge(c.timeInMillis).toString()
 
                 },
                 Calendar.YEAR,
@@ -277,7 +269,7 @@ class DialogUpdateUserInfo : DialogFragment {
                         .update("personalImageUri", downloadUri)
                         .addOnSuccessListener {
                             Picasso.get().load(downloadUri)
-                                .into(dialogUpdateUserInfoBinding.imgUserImage)
+                                .into(fragmentProfileBinding.imgUserImage)
                             progressDialog.dismiss()
                         }
                 } else {
@@ -290,7 +282,7 @@ class DialogUpdateUserInfo : DialogFragment {
     }
 
     private fun saveProviderData() {
-        if (dialogUpdateUserInfoBinding.edtUserNameDialog.text!!.isNotEmpty()) {
+        if (fragmentProfileBinding.edtUserNameDialog.text!!.isNotEmpty()) {
             if (selectedService != null) {
                 val progressDialog = ProgressDialog(context)
                 progressDialog.setTitle("Set Profile Image")
@@ -316,19 +308,19 @@ class DialogUpdateUserInfo : DialogFragment {
                         if (task.isSuccessful) {
                             val downloadUri = task.result.toString()
                             val userName =
-                                dialogUpdateUserInfoBinding.edtUserNameDialog.text.toString()
+                                fragmentProfileBinding.edtUserNameDialog.text.toString()
                             val service = selectedService!!.id
                             val phoneNo = FirebaseAuth.getInstance().currentUser!!.phoneNumber
 
-                            val age = dialogUpdateUserInfoBinding.tvAge.text.toString().toInt()
-                            val bod = dialogUpdateUserInfoBinding.tvDate.text.toString()
+                            val age = fragmentProfileBinding.tvAge.text.toString().toInt()
+                            val bod = fragmentProfileBinding.tvDate.text.toString()
                             val perHour =
-                                dialogUpdateUserInfoBinding.edtPerHour.text.toString().toDouble()
+                                fragmentProfileBinding.edtPerHour.text.toString().toDouble()
 
-                            val city = dialogUpdateUserInfoBinding.edtCity.text.toString()
-                            val street = dialogUpdateUserInfoBinding.edtStreet.text.toString()
-                            val home = dialogUpdateUserInfoBinding.edtHome.text.toString()
-                            val level = dialogUpdateUserInfoBinding.edtFlaor.text.toString()
+                            val city = fragmentProfileBinding.edtCity.text.toString()
+                            val street = fragmentProfileBinding.edtStreet.text.toString()
+                            val home = fragmentProfileBinding.edtHome.text.toString()
+                            val level = fragmentProfileBinding.edtFlaor.text.toString()
                             address["city"] = city
                             address["street"] = street
                             address["home"] = home
@@ -356,7 +348,7 @@ class DialogUpdateUserInfo : DialogFragment {
                                         )
                                         .addOnSuccessListener {
                                             progressDialog.dismiss()
-                                            super.dismiss()
+//                                            super.dismiss()
                                         }
                                 }
                         } else {
@@ -370,36 +362,35 @@ class DialogUpdateUserInfo : DialogFragment {
             } else Toast.makeText(context, "Service required", Toast.LENGTH_SHORT).show()
 
 
-        } else dialogUpdateUserInfoBinding.edtUserNameDialog.error = "Please Enter Your UserName"
+        } else fragmentProfileBinding.edtUserNameDialog.error = "Please Enter Your UserName"
     }
 
     private fun getProviderData() {
         if (FirebaseAuth.getInstance().currentUser!!.phoneNumber != ""
             && FirebaseAuth.getInstance().currentUser!!.phoneNumber != null
         ) {
-            dialogUpdateUserInfoBinding.edtUserPhoneDialog.setText(FirebaseAuth.getInstance().currentUser!!.phoneNumber)
-            dialogUpdateUserInfoBinding.edtUserPhoneDialog.isEnabled = false
+            fragmentProfileBinding.edtUserPhoneDialog.setText(FirebaseAuth.getInstance().currentUser!!.phoneNumber)
+            fragmentProfileBinding.edtUserPhoneDialog.isEnabled = false
         }
         loadingDialog.show()
         PROVIDERS_REF.document(Common.CURRENT_USER_KEY)
             .get().addOnSuccessListener {
                 if (it.exists()) {
                     update = true
-                    super.setCancelable(true)
-                    dialogUpdateUserInfoBinding.btnSaveDialog.setText(R.string.update)
+                    fragmentProfileBinding.btnSaveDialog.setText(R.string.update)
                     val provider = it.toObject(Provider::class.java)
                     providerImgUrl = provider!!.personalImageUri
                     additions = provider.additions
-                    dialogUpdateUserInfoBinding.provider = provider
-                    dialogUpdateUserInfoBinding.edtUserPhoneDialog.isEnabled = false
+                    fragmentProfileBinding.provider = provider
+                    fragmentProfileBinding.edtUserPhoneDialog.isEnabled = false
                     additionsAdapter.setList(additions)
-                    dialogUpdateUserInfoBinding.serviceSpinner.visibility = View.GONE
+                    fragmentProfileBinding.serviceSpinner.visibility = GONE
                     selectedService = Service(provider.serviceId, provider.serviceType)
                     if (provider.gender == "Male")
-                        dialogUpdateUserInfoBinding.genderSwitch.setDirection(direction = StickySwitch.Direction.LEFT)
+                        fragmentProfileBinding.genderSwitch.setDirection(direction = StickySwitch.Direction.LEFT)
                     else
-                        dialogUpdateUserInfoBinding.genderSwitch.setDirection(direction = StickySwitch.Direction.RIGHT)
-                    dialogUpdateUserInfoBinding.btnSaveDialog.visibility = VISIBLE
+                        fragmentProfileBinding.genderSwitch.setDirection(direction = StickySwitch.Direction.RIGHT)
+                    fragmentProfileBinding.btnSaveDialog.visibility = VISIBLE
                     loadingDialog.dismiss()
                     setUpView()
 
@@ -459,7 +450,7 @@ class DialogUpdateUserInfo : DialogFragment {
     }
 
     private fun setServiceSpinner() {
-        val spinner = dialogUpdateUserInfoBinding.serviceSpinner
+        val spinner = fragmentProfileBinding.serviceSpinner
         SERVICES_REF.get().addOnSuccessListener { document ->
             val servicesList = document.toObjects(Service::class.java)
             val services = ArrayList<Service>()
@@ -483,29 +474,29 @@ class DialogUpdateUserInfo : DialogFragment {
     }
 
     private fun addAddition() {
-        if (dialogUpdateUserInfoBinding.edtAdditionName.text!!.isNotEmpty() &&
-            dialogUpdateUserInfoBinding.edtAdditionPrice.text!!.isNotEmpty()
+        if (fragmentProfileBinding.edtAdditionName.text!!.isNotEmpty() &&
+            fragmentProfileBinding.edtAdditionPrice.text!!.isNotEmpty()
         ) {
 
-            val name = dialogUpdateUserInfoBinding.edtAdditionName.text.toString()
-            val price = dialogUpdateUserInfoBinding.edtAdditionPrice.text.toString().toDouble()
+            val name = fragmentProfileBinding.edtAdditionName.text.toString()
+            val price = fragmentProfileBinding.edtAdditionPrice.text.toString().toDouble()
             val addition = Addition(name, price)
             additions.add(addition)
             additionsAdapter.setList(additions)
-            dialogUpdateUserInfoBinding.edtAdditionName.setText("")
-            dialogUpdateUserInfoBinding.edtAdditionPrice.setText("")
+            fragmentProfileBinding.edtAdditionName.setText("")
+            fragmentProfileBinding.edtAdditionPrice.setText("")
 
         } else {
-            if (dialogUpdateUserInfoBinding.edtAdditionName.text!!.isEmpty()) {
-                dialogUpdateUserInfoBinding.edtAdditionName.error = "reqired"
+            if (fragmentProfileBinding.edtAdditionName.text!!.isEmpty()) {
+                fragmentProfileBinding.edtAdditionName.error = "reqired"
             }
-            if (dialogUpdateUserInfoBinding.edtAdditionPrice.text!!.isEmpty()) {
-                dialogUpdateUserInfoBinding.edtAdditionPrice.error = "reqired"
+            if (fragmentProfileBinding.edtAdditionPrice.text!!.isEmpty()) {
+                fragmentProfileBinding.edtAdditionPrice.error = "reqired"
             }
         }
     }
 
-    inner class ServiceSpinnerListener : OnItemSelectedListener {
+    inner class ServiceSpinnerListener : AdapterView.OnItemSelectedListener {
         override fun onNothingSelected(parent: AdapterView<*>?) {
             if (parent!!.selectedItemPosition == 0)
                 Toast.makeText(parent.context, "Service required", Toast.LENGTH_SHORT).show()
@@ -531,7 +522,7 @@ class DialogUpdateUserInfo : DialogFragment {
         if (requestCode == Gellary_Key && resultCode == Activity.RESULT_OK && data != null) {
             if (!update) {
                 imageUri = data.data!!
-                Picasso.get().load(imageUri).into(dialogUpdateUserInfoBinding.imgUserImage)
+                Picasso.get().load(imageUri).into(fragmentProfileBinding.imgUserImage)
             } else {
                 val localImageURI = data.data!!
                 uploadProviderImage(localImageURI)
@@ -539,9 +530,4 @@ class DialogUpdateUserInfo : DialogFragment {
         }
     }
 
-//    override fun onDetach() {
-//        val parent = activity as MainActivity
-//        parent.checkNewProviderData()
-//        super.onDetach()
-//    }
 }

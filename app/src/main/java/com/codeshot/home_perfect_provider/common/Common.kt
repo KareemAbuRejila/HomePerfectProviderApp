@@ -3,6 +3,7 @@ package com.codeshot.home_perfect_provider.common
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
+import androidx.preference.PreferenceManager
 import cc.cloudist.acplibrary.ACProgressBaseDialog
 import cc.cloudist.acplibrary.ACProgressConstant
 import cc.cloudist.acplibrary.ACProgressFlower
@@ -21,6 +22,7 @@ object Common {
     val REQUESTS_REF = ROOT_REF.collection("Requests")
     val NOTIFICATIONS_REF = ROOT_REF.collection("Notifications")
 
+    var SHARED_PREF: SharedPreferences? = null
 
     private const val FCM_URL = "https://fcm.googleapis.com/"
 
@@ -38,17 +40,12 @@ object Common {
         return acProgressBaseDialog
     }
 
-    fun SHARED_PREF(context: Context): SharedPreferences {
-        return context.getSharedPreferences(
-            "com.codeshot.home_perfect",
-            Context.MODE_PRIVATE
-        )
+    fun getSharedPref(context: Context): SharedPreferences {
+        return PreferenceManager.getDefaultSharedPreferences(context)
     }
 
-    fun getSharedPref(context: Context): SharedPreferences {
-        return context.getSharedPreferences(
-            "com.codeshot.home_perfect_provider",
-            Context.MODE_PRIVATE
-        )
-    }
+
+    const val FILE_PROVIDER_AUTHORITY = "com.codeshot.home_perfect_provider.provider"
+    const val FILE_PROVIDER_PATH =
+        "/Android/data/com.codeshot.home_perfect_provider/files/Pictures"
 }

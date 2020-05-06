@@ -1,12 +1,15 @@
 package com.codeshot.home_perfect_provider.adapters
 
+import android.R.attr.*
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.codeshot.home_perfect_provider.databinding.ItemAdditionBinding
 import com.codeshot.home_perfect_provider.databinding.ItemRequestBinding
 import com.codeshot.home_perfect_provider.models.Addition
 import com.codeshot.home_perfect_provider.models.Request
+
 
 class AdditionsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -79,6 +82,7 @@ class AdditionsAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         fun bindItem(request:Request){
             itemRequestBinding.request=request
             itemRequestBinding.executePendingBindings()
+
         }
     }
 }

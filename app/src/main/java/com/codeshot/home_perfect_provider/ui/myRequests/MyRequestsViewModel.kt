@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.codeshot.home_perfect_provider.common.Common
 import com.codeshot.home_perfect_provider.common.Common.CURRENT_USER_KEY
 import com.codeshot.home_perfect_provider.common.Common.PROVIDERS_REF
 import com.codeshot.home_perfect_provider.common.Common.REQUESTS_REF
@@ -14,13 +15,12 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.FieldPath
 
 class MyRequestsViewModel : ViewModel() {
-    private var sharedPreferences: SharedPreferences? = null
+    private var sharedPreferences: SharedPreferences = Common.SHARED_PREF!!
     val bookings = MutableLiveData<List<Request>>()
 
 
     fun getInstance(context: Context) {
         if (sharedPreferences != null) return
-        sharedPreferences = SHARED_PREF(context = context)
     }
 
     fun getRequest(requests: ArrayList<String>) {
@@ -33,8 +33,6 @@ class MyRequestsViewModel : ViewModel() {
                 }
 
         }
-
-
     }
 
 }

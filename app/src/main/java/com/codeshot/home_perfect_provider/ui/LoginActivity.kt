@@ -22,7 +22,7 @@ import com.codeshot.home_perfect_provider.R
 import com.codeshot.home_perfect_provider.common.Common.USERS_REF
 import com.codeshot.home_perfect_provider.databinding.ActivityLoginBinding
 import com.codeshot.home_perfect_provider.databinding.DialogLoginBinding
-import com.codeshot.home_perfect_provider.ui.home.HomeActivity
+import com.codeshot.home_perfect_provider.ui.main.MainActivity
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -230,7 +230,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun sendToHomeActivity(userType: String) {
-        val homeIntent = Intent(this, HomeActivity::class.java)
+        val homeIntent = Intent(this, MainActivity::class.java)
         homeIntent.putExtra("user", userType)
         startActivity(homeIntent)
         finish()

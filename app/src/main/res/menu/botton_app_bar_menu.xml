@@ -3,22 +3,30 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/nav_addService"
-        android:icon="@drawable/ic_plus"
-        android:title="Add Serice"
+        android:id="@+id/nav_Home"
+        android:icon="@drawable/ic_icon_home"
+        android:title="Home"
         app:showAsAction="always" />
 
     <item
-        android:icon="@android:drawable/ic_media_ff"
-        android:title="Item3"
+        android:id="@+id/nav_requests"
+        android:icon="@drawable/ic_requests"
+        android:title="Requests"
         app:showAsAction="always" />
     <item
-        android:icon="@android:drawable/ic_media_play"
-        android:title="Item4"
+        android:id="@+id/nav_payments"
+        android:icon="@drawable/ic_payments"
+        android:title="Payments"
         app:showAsAction="always" />
+
+    <!--    <item-->
+    <!--        android:id="@+id/nav_SignOut"-->
+    <!--        android:icon="@drawable/ic_signout"-->
+    <!--        android:title="Item2"-->
+    <!--        app:showAsAction="always" />-->
     <item
-        android:id="@+id/nav_SignOut"
-        android:icon="@drawable/ic_signout"
-        android:title="Item2"
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="Profile"
         app:showAsAction="always" />
 </menu>

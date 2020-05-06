@@ -15,7 +15,7 @@ import com.codeshot.home_perfect_provider.common.Common.TOKENS_REF
 import com.codeshot.home_perfect_provider.Helpers.NotificationsHelper
 import com.codeshot.home_perfect_provider.R
 import com.codeshot.home_perfect_provider.models.Token
-import com.codeshot.home_perfect_provider.ui.home.HomeActivity
+import com.codeshot.home_perfect_provider.ui.main.MainActivity
 import com.codeshot.home_perfect_provider.ui.requestActivity.RequestActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.iid.FirebaseInstanceId
@@ -51,7 +51,8 @@ class MyFreebaseMessagingService : FirebaseMessagingService() {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private fun showArrivedNotificationAPI26(requestId: String, userName: String) {
         val homeIntent=Intent(baseContext,
-            HomeActivity::class.java)
+            MainActivity::class.java
+        )
         homeIntent.putExtra("type","booking")
         homeIntent.putExtra("requestId",requestId)
         val contentIntent = PendingIntent.getActivity(

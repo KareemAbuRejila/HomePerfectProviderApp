@@ -15,7 +15,8 @@ class User {
     var email:String?=null
     var bod:String?=null
     var gender:String?=null
-    var address=HashMap<String,String>()
+    var address: String? = null
+    var notifications = ArrayList<Notification>()
 
     constructor(personalImageUri: String, userName: String) {
         this.personalImageUri = personalImageUri
