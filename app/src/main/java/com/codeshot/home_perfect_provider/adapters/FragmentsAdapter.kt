@@ -19,6 +19,7 @@ class FragmentsAdapter(private val context: Context, fm: FragmentManager, behavi
             2 -> PaymentsFragment()
             else -> ProfileFragment()
         }
+
     }
 
     override fun getCount(): Int {

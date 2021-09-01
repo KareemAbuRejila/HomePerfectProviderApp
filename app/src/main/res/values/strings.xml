@@ -9,4 +9,13 @@
     <string name="done">Done</string>
     <string name="rating">Rating</string>
     <string name="canceled">Canceled</string>
+    <string name="total_balance">Total Balance</string>
+    <string name="available_balance">Available Balance</string>
+    <string name="balance">Balance:</string>
+    <string name="dollar" translatable="false">$</string>
+    <string name="requests">Requests:</string>
+    <string name="total">Total</string>
+    <string name="rated">Rated:</string>
+    <string name="offline">Offline</string>
+    <string name="online">Online</string>
 </resources>

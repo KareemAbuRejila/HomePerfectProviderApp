@@ -15,18 +15,18 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class Request: Serializable {
-    var id:String?=null
-    var from:String?=null
-    var to:String?=null
+class Request : Serializable {
+    var id: String? = null
+    var from: String? = null
+    var to: String? = null
     var time: Date? = null
 
-    var status:String?=null
-    val address=HashMap<String,String>()
-    var requestLocation: Location?=null
-    var additions=ArrayList<Addition>()
-    var perHour:Double?=0.0
-    var totalPrice:Double?=0.0
+    var status: String? = null
+    val address = HashMap<String, String>()
+    var requestLocation: Location? = null
+    var additions = ArrayList<Addition>()
+    var perHour: Double? = 0.0
+    var totalPrice: Double? = 0.0
 
     var providerUserName: String? = null
     var providerUserImage: String? = null
@@ -40,7 +40,7 @@ class Request: Serializable {
         @JvmStatic
         @BindingAdapter("ImgCRequest")
         fun loadCRequestImage(view: CircleImageView?, url: String?) {
-            if (url != null)
+            if (url != null && url != "" && view != null)
                 Picasso.get().load(url).placeholder(R.drawable.ic_person_black_24dp)
                     .error(android.R.color.holo_red_dark).into(view)
         }
@@ -48,13 +48,14 @@ class Request: Serializable {
         @JvmStatic
         @BindingAdapter("additions")
         fun loadAddictionsRequest(list: ListView, additions: ArrayList<Addition>) {
-            if (additions.size!=0){
-                val listArray=ArrayList<String>()
+            if (additions.size != 0) {
+                val listArray = ArrayList<String>()
                 additions.forEach {
                     listArray.add(it.name.toString())
                 }
-                val adapter=ArrayAdapter(list.context,android.R.layout.simple_list_item_1,listArray)
-                list.adapter=adapter
+                val adapter =
+                    ArrayAdapter(list.context, android.R.layout.simple_list_item_1, listArray)
+                list.adapter = adapter
             }
         }
 
@@ -63,33 +64,33 @@ class Request: Serializable {
         @BindingAdapter("statusRequest")
         fun loadRequestStatus(textView: TextView?, status: String?) {
             when (status) {
-                "accepted" ->{
-                    textView!!.setTextColor(textView.context.resources.getColor(android.R.color.holo_green_light))
-                    textView.text=textView.context.resources.getString(R.string.accepted)
+                "accepted" -> {
+                    textView!!.setTextColor(textView.context.resources.getColor(R.color.acceptedColor))
+                    textView.text = textView.context.resources.getString(R.string.accepted)
                 }
                 "waiting" -> {
-                    textView!!.setTextColor(textView.context.resources.getColor(android.R.color.holo_blue_dark))
-                    textView.text=textView.context.resources.getString(R.string.waiting)
+                    textView!!.setTextColor(textView.context.resources.getColor(R.color.waitingColor))
+                    textView.text = textView.context.resources.getString(R.string.waiting)
 
                 }
                 "in progress" -> {
-                    textView!!.setTextColor(textView.context.resources.getColor(android.R.color.holo_blue_bright))
-                    textView.text=textView.context.resources.getString(R.string.in_progress)
+                    textView!!.setTextColor(textView.context.resources.getColor(R.color.inProgressColor))
+                    textView.text = textView.context.resources.getString(R.string.in_progress)
 
                 }
                 "done" -> {
-                    textView!!.setTextColor(textView.context.resources.getColor(android.R.color.holo_green_dark))
-                    textView.text=textView.context.resources.getString(R.string.done)
+                    textView!!.setTextColor(textView.context.resources.getColor(R.color.doneColor))
+                    textView.text = textView.context.resources.getString(R.string.done)
 
                 }
                 "rating" -> {
-                    textView!!.setTextColor(textView.context.resources.getColor(android.R.color.black))
-                    textView.text=textView.context.resources.getString(R.string.rating)
+                    textView!!.setTextColor(textView.context.resources.getColor(R.color.ratingColor))
+                    textView.text = textView.context.resources.getString(R.string.rating)
 
                 }
-                "canceled"-> {
-                    textView!!.setTextColor(textView.context.resources.getColor(android.R.color.holo_red_light))
-                    textView.text=textView.context.resources.getString(R.string.canceled)
+                "canceled" -> {
+                    textView!!.setTextColor(textView.context.resources.getColor(R.color.canceledColor))
+                    textView.text = textView.context.resources.getString(R.string.canceled)
 
                 }
                 else -> return

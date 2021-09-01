@@ -290,7 +290,8 @@ class DialogUpdateUserInfo : DialogFragment {
     }
 
     private fun saveProviderData() {
-        if (dialogUpdateUserInfoBinding.edtUserNameDialog.text!!.isNotEmpty()) {
+        if (dialogUpdateUserInfoBinding.edtUserNameDialog.text!!.isNotEmpty()
+            && !dialogUpdateUserInfoBinding.tvDate.text.isNullOrEmpty()) {
             if (selectedService != null) {
                 val progressDialog = ProgressDialog(context)
                 progressDialog.setTitle("Set Profile Image")
@@ -319,7 +320,6 @@ class DialogUpdateUserInfo : DialogFragment {
                                 dialogUpdateUserInfoBinding.edtUserNameDialog.text.toString()
                             val service = selectedService!!.id
                             val phoneNo = FirebaseAuth.getInstance().currentUser!!.phoneNumber
-
                             val age = dialogUpdateUserInfoBinding.tvAge.text.toString().toInt()
                             val bod = dialogUpdateUserInfoBinding.tvDate.text.toString()
                             val perHour =

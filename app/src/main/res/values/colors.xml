@@ -14,4 +14,17 @@
     <color name="tabBG">#59ff22</color>
     <color name="itemTabLine">#001eff</color>
     <color name="backgroundColor">#AB151C25</color>
+
+    <color name="acceptedColor">#9C27B0</color>
+    <color name="waitingColor">#ff0099cc</color>
+    <color name="inProgressColor">#ff00ddff</color>
+    <color name="doneColor">#4CAF50</color>
+    <color name="ratingColor">#ff000000</color>
+    <color name="canceledColor">#ffff4444</color>
+
+
+
+
+
+
 </resources>

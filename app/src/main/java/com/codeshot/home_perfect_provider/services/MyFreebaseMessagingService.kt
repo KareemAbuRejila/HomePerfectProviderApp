@@ -167,7 +167,7 @@ class MyFreebaseMessagingService : FirebaseMessagingService() {
             TOKENS_REF.document(CURRENT_USER_KEY)
                 .set(token)
                 .addOnSuccessListener { Log.i("Saved Token", "Yesssssssssssssssssssssss") }
-                .addOnFailureListener { e -> Log.i("ERROR TOKEN", e.message) }
+                .addOnFailureListener { e -> Log.i("ERROR TOKEN", e.message!!) }
 
         }
     }

@@ -9,4 +9,12 @@
     <string name="rating">جاري التقيم</string>
     <string name="canceled">مرفوض</string>
     <string name="update">تحديث</string>
+    <string name="total_balance">الرصيد الكلي</string>
+    <string name="available_balance">الرصيد القابل للسحب</string>
+    <string name="balance">الرصيد:</string>
+    <string name="requests">الطلبات:</string>
+    <string name="total">الكلي</string>
+    <string name="rated">التقيم:</string>
+    <string name="offline">غير متاح</string>
+    <string name="online">متاح</string>
 </resources>

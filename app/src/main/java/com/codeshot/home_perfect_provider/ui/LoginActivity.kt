@@ -117,7 +117,7 @@ class LoginActivity : AppCompatActivity() {
                     sendToHomeActivity("new")
                 }.addOnFailureListener {
                     Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
-                    loginDialog.dismiss()
+//                    loginDialog.dismiss()
                 }
         }
         loginDialog.show()
@@ -174,7 +174,7 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onVerificationFailed(e: FirebaseException) {
                 Toast.makeText(this@LoginActivity, e.message, Toast.LENGTH_LONG).show()
-                Log.e(TAG, e.message)
+                Log.e(TAG, e.message!!)
                 progressBar.hide()
             }
 

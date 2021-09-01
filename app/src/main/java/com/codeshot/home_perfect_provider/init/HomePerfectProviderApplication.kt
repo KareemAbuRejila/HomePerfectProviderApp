@@ -1,4 +1,4 @@
-package com.codeshot.home_perfect_provider
+package com.codeshot.home_perfect_provider.init
 
 import android.app.Application
 import androidx.preference.PreferenceManager

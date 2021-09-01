@@ -1,6 +1,7 @@
 package com.codeshot.home_perfect_provider.models
 
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.codeshot.home_perfect_provider.R
 import com.squareup.picasso.Picasso
@@ -25,6 +26,13 @@ class Provider : Serializable {
     var requests= ArrayList<String>()
     var address= HashMap<String, String>()
     var additions= ArrayList<Addition>()
+
+    var totalBalance:Int?=0
+    var availableBalance:Int?=0
+    var totalRequest:Int?=0
+        .apply {
+            requests.size
+        }
 
     constructor()
     constructor(
@@ -67,7 +75,7 @@ class Provider : Serializable {
         fun loadImage(view: CircleImageView?, url: String?) {
             if (url != null)
                 Picasso.get().load(url).placeholder(R.drawable.ic_person_black_24dp)
-                    .error(R.color.error_color).into(view)
+                    .error(R.drawable.ic_errorimage).into(view)
         }
         @JvmStatic
         @BindingAdapter("status")
@@ -77,6 +85,12 @@ class Provider : Serializable {
             else
                 switcher.setDirection(StickySwitch.Direction.LEFT)
 
+        }
+
+        @JvmStatic
+        @BindingAdapter("totalRequest")
+        fun loadTotalRequests(textView: TextView,requests: ArrayList<String>){
+            textView.text=requests.size.toString()
         }
     }
 }

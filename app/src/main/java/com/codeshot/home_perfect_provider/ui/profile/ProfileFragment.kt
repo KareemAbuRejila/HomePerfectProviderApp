@@ -29,9 +29,11 @@ import com.codeshot.home_perfect_provider.common.Common.PROVIDERS_REF
 import com.codeshot.home_perfect_provider.common.Common.SERVICES_REF
 import com.codeshot.home_perfect_provider.databinding.FragmentProfileBinding
 import com.codeshot.home_perfect_provider.databinding.FragmentRequestsBinding
+import com.codeshot.home_perfect_provider.init.HomePerfectProviderApplication
 import com.codeshot.home_perfect_provider.models.Addition
 import com.codeshot.home_perfect_provider.models.Provider
 import com.codeshot.home_perfect_provider.models.Service
+import com.codeshot.home_perfect_provider.ui.LoginActivity
 import com.codeshot.home_perfect_provider.ui.main.MainActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -98,11 +100,11 @@ class ProfileFragment : Fragment() {
                     updateProviderData()
 
             }
+        fragmentProfileBinding.btnSignOut.setOnClickListener { signOut() }
         fragmentProfileBinding.imgUserImage.setOnClickListener { showImageInDialog() }
         // Source can be CACHE, SERVER, or DEFAULT.
-        val source = Source.CACHE
         PROVIDERS_REF.document(CURRENT_USER_KEY)
-            .get(source).addOnSuccessListener { document ->
+            .get().addOnSuccessListener { document ->
                 if (!document!!.exists()) {
 //                    fragmentProfileBinding.fullDialogClose.visibility = View.GONE
                 }
@@ -408,12 +410,16 @@ class ProfileFragment : Fragment() {
         builder.setTitle("Choose!")
         if (imageUri != null || providerImgUrl != null) {
             builder.setPositiveButton("View") { dialog, which ->
-                if (imageUri != null) {
-                    showImageViewer(imageUri.toString())
-                } else if (providerImgUrl != null) {
-                    showImageViewer(providerImgUrl!!)
+                when {
+                    imageUri != null -> {
+                        showImageViewer(imageUri.toString())
+                    }
+                    providerImgUrl != null -> {
+                        showImageViewer(providerImgUrl!!)
 
-                } else Toast.makeText(context, "Image Not Founded", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> Toast.makeText(context, "Image Not Founded", Toast.LENGTH_SHORT).show()
+                }
             }.setNegativeButton("Edit") { dialog, which ->
                 chooseImage()
             }
@@ -516,6 +522,16 @@ class ProfileFragment : Fragment() {
 
     }
 
+    fun signOut() {
+        FirebaseAuth.getInstance().signOut()
+        startActivity(
+            Intent(
+                requireContext(),
+                LoginActivity::class.java
+            )
+        )
+        Common.SHARED_PREF!!.edit().remove("provider").apply()
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
